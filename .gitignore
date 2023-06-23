@@ -1,0 +1,9 @@
+dev.env
+venv/
+.env
+.vscode/
+dist/
+old/
+poetry.lock
+*/__pycache__/
+*.pyc
