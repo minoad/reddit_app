@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from reddit import store
+
 SubredditName = str
 
 
@@ -22,6 +24,9 @@ class RedditDataTable:
     likes: int
 
 
+# if has body, is comments.  else submission.
+
+
 @dataclass()
 class Comment:
     author: str = ""
@@ -35,6 +40,42 @@ class Comment:
     contraversiality: float = 0.0
     ups: int = 0
     author_flair_type: str = ""
+
+    # thee type should know its own schema.
+    # # create table if not exists comments (author text, type text, body text, down int, likes int, subreddit_name_prefixed text, subreddit_id text, contraversiality float, ups int, author_flair_type text)
+    # this needs to create a generic output that can be converted by the specific store.
+    # for instance, comment_store.store_record must be able to do either
+    # # create table if not exists comments (author text, type text, body text, down int, likes int, subreddit_name_prefixed text, subreddit_id text, contraversiality float, ups int, author_flair_type text)
+    # # insert into comments values ('TheTorontoExplorer', 'comment', 'Worst pepper spray', 0, 0, 'r/BeAmazed', 't5_363r3', 0.0, -1, 'text')
+    # or
+    # # 'TheTorontoExplorer', 'comment', 'Worst pepper spray', 0, 0, 'r/BeAmazed', 't5_363r3', 0.0, -1, 'text'
+
+    # a dict may be best.
+    def save_record(self, comment_store: store.Store):
+        self.schema = {
+            "author": "text",
+            "type": "text",
+            "body": "text",
+            "down": "int",
+            "likes": "int",
+            "subreddit_name_prefixed": "text",
+            "subreddit_id": "text",
+            "contraversiality": "float",
+            "ups": "int",
+            "author_flair_type": "text",
+        }
+        
+        # # create table if not exists
+        comment_store.store_record(
+            self  # .__dict__
+            # f"create table if not exists {default_table_name} (author text, type text, body text, down int, likes int, subreddit_name_prefixed text, subreddit_id text, contraversiality float, ups int, author_flair_type text)"
+        )
+
+        # create sql insert statement here
+        # sql_statement = f"insert into comments values ('{self.author}', '{self.type}', '{self.body}', {self.down}, {self.likes or 0}, '{self.subreddit_name_prefixed}', '{self.subreddit_id}', {self.contraversiality}, {self.ups}, '{self.author_flair_type}')"
+        # comment_store.store_record(
+        #     f"insert into {default_table_name} values ('{self.author}', '{self.type}', '{self.body}', {self.down}, {self.likes or 0}, '{self.subreddit_name_prefixed}', '{self.subreddit_id}', {self.contraversiality}, {self.ups}, '{self.author_flair_type}')"
+        # )
 
 
 # All Comment fields:

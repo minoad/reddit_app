@@ -18,11 +18,12 @@ def _create_dict_from_class(cls, data: dict) -> dict:
 @dataclass()
 class User:
     username: str = ""
+    limit: int = 10
     reddit_name: str = ""
     reddit_fullname: str = ""
     reddit_submissions: List = field(default_factory=list)
     reddit_comments: List = field(default_factory=list)
-
+    
     # Helper function to create a dict comprehension that constructs a dict of fields we want.
     def __parse_submissions(self, data: List):
         """
@@ -51,8 +52,8 @@ class User:
         self.reddit_name = self.user_data.name
         self.reddit_fullname = self.user_data.fullname
 
-        self.__parse_submissions(self.user_data.submissions.new())
-        self.__parse_comments(self.user_data.comments.new())
+        self.__parse_submissions(self.user_data.submissions.new(limit=self.limit))
+        self.__parse_comments(self.user_data.comments.new(limit=self.limit))
 
         # TODO: get submissions into the correct class here
         print("a")

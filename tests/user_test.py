@@ -1,4 +1,4 @@
-from reddit import user
+from reddit import store, user
 
 TEST_USERS = [
     "ricardoroddy1",
@@ -8,6 +8,36 @@ TEST_USERS = [
     "xomaleo",
     "esi_disi",
 ]
+
+
+def comment_file_store_test():
+    saver = store.FileStore("data/test.txt")
+    user.User(TEST_USERS[3]).reddit_comments[0].save_record(saver)
+    print("a")
+
+
+def comment_sql_store_test():
+    saver = store.SQLiteStore("data/test.db")
+    user.User(TEST_USERS[3]).reddit_comments[0].save_record(saver)
+    print("a")
+
+
+def multiple_comment_sql_store_test():
+    saver = store.SQLiteStore("data/test.db")
+    [i.save_record(saver) for i in user.User(TEST_USERS[3]).reddit_comments]
+
+    # [0].save_record(saver)
+    print("a")
+
+
+def multiple_comment_multiple_users_sql_store_test():
+    saver = store.SQLiteStore("data/test.db")
+
+    for t_user in TEST_USERS:
+        [i.save_record(saver) for i in user.User(t_user).reddit_comments]
+
+    # [0].save_record(saver)
+    print("a")
 
 
 def missing_username_test():
@@ -30,5 +60,9 @@ def user_test():
 
 
 if __name__ == "__main__":
-    user_test()
-    n = []
+    multiple_comment_multiple_users_sql_store_test()
+    # comment_file_store_test()
+    # multiple_comment_sql_store_test()
+    comment_sql_store_test()
+    # user_test()
+    # n = []
